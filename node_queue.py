@@ -1,10 +1,6 @@
 # This file builds a working queue using Node objects linked together.
 # Each node holds one piece of data and a pointer to the next node.
 # Think of it like a chain — each link knows what the next link is.
-#
-# TODO: Implement the Node and NodeQueue classes.
-# Use a linked list approach where each node points to the next node.
-# The queue should maintain front_node and back_node pointers.
 
 from queue_blueprint import Queue, QueueIsEmptyError
 
@@ -12,8 +8,9 @@ from queue_blueprint import Queue, QueueIsEmptyError
 # A Node holds one item of data and knows what the next node is.
 class Node:
     def __init__(self, data):
-        # TODO: Store the data and initialize next_node to None
-        pass
+        # Store the data value and initialize the next node pointer to None
+        self.data = data
+        self.next_node = None
 
 
 class NodeQueue(Queue):
@@ -22,40 +19,57 @@ class NodeQueue(Queue):
     # front_node points to the first person in line.
     # back_node points to the last person in line.
     def __init__(self):
-        # TODO: Initialize front_node and back_node to None
-        pass
+        # Initialize both front and back pointers to None for an empty queue
+        self.front_node = None
+        self.back_node = None
 
     # Adds a new item to the back of the queue.
     # Creates a new node and attaches it to the end of the chain.
     def enqueue(self, new_item):
-        # TODO: Create a new node with new_item.
-        # If queue is empty, set both front_node and back_node to new_node.
-        # Otherwise, attach new_node to the end and update back_node.
-        pass
+        # Create a new node containing the new item
+        new_node = Node(new_item)
+        # If the queue is empty, the new node becomes both front and back
+        if self.is_empty():
+            self.front_node = new_node
+            self.back_node = new_node
+        else:
+            # Link the current back node to the new node
+            self.back_node.next_node = new_node
+            # Update the back pointer to the new node
+            self.back_node = new_node
 
     # Removes the item at the front of the queue and returns it.
     # Raises QueueIsEmptyError if there is nothing in the queue.
     def dequeue(self):
-        # TODO: Check if empty, raise error if so.
-        # Save the data from front_node.
-        # Move front_node forward.
-        # If front_node is now None, also set back_node to None.
-        # Return the saved data.
-        pass
+        # Check if the queue is empty and raise an error if so
+        if self.is_empty():
+            raise QueueIsEmptyError("Cannot dequeue from an empty queue")
+        # Save the data from the front node before removing it
+        data = self.front_node.data
+        # Move the front pointer to the next node in the queue
+        self.front_node = self.front_node.next_node
+        # If the queue is now empty, set the back pointer to None as well
+        if self.front_node is None:
+            self.back_node = None
+        # Return the data that was removed
+        return data
 
     # Returns the item at the front of the queue without removing it.
     # Raises QueueIsEmptyError if there is nothing in the queue.
     def get_front(self):
-        # TODO: Check if empty, raise error if so.
-        # Return the data from front_node.
-        pass
+        # Check if the queue is empty and raise an error if so
+        if self.is_empty():
+            raise QueueIsEmptyError("Cannot get front from an empty queue")
+        # Return the data from the front node without removing it
+        return self.front_node.data
 
     # Returns True if the queue has no items, False otherwise.
     def is_empty(self):
-        # TODO: Return True if front_node is None, False otherwise.
-        pass
+        # The queue is empty when the front pointer is None
+        return self.front_node is None
 
     # Removes all items from the queue by removing both pointers.
     def clear(self):
-        # TODO: Set both front_node and back_node to None.
-        pass
+        # Reset both front and back pointers to None to clear the queue
+        self.front_node = None
+        self.back_node = None
