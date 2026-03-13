@@ -1,67 +1,77 @@
 # This file defines two classes: Process and FCFSAlgorithm.
 # A Process represents a single task waiting to be run by the CPU.
 # FCFSAlgorithm runs those processes in the order they arrived (First-Come, First-Served).
-#
-# TODO: Implement the Process and FCFSAlgorithm classes.
-# Process should store process_id, arrival_time, burst_time, waiting_time, turnaround_time.
-# FCFSAlgorithm should use a queue to manage processes and calculate times.
 
 from node_queue import NodeQueue
 
 
-# A Process holds all the information about one task the CPU needs to run.
+# process class - holds all the info about one process
 class Process:
 
-    # Sets up a new process with its basic information.
-    # The waiting time and turnaround time start at zero.
-    # They will be calculated later by the FCFS algorithm.
+    # constructor
     def __init__(self, process_id, arrival_time, burst_time):
-        # TODO: Store process_id, arrival_time, burst_time.
-        # Initialize waiting_time and turnaround_time to 0.
-        pass
+        # store the basic process info
+        self.process_id = process_id
+        self.arrival_time = arrival_time
+        self.burst_time = burst_time
+        # these get calculated later in the algorithm
+        self.waiting_time = 0
+        self.turnaround_time = 0
+
+    def __str__(self):
+        # just a nice way to print process info
+        return (f"Process {self.process_id} | "
+                f"Arrival: {self.arrival_time} | "
+                f"Burst: {self.burst_time} | "
+                f"Waiting: {self.waiting_time} | "
+                f"Turnaround: {self.turnaround_time}")
 
 
+# FCFS scheduler class
 class FCFSAlgorithm:
 
-    # Sets up the FCFS scheduler with an empty queue and an empty list of processes.
-    # The queue will hold processes waiting to be run.
-    # The list of all processes is kept so we can display results later.
     def __init__(self):
-        # TODO: Create self.process_queue as a NodeQueue.
-        # Create self.all_processes as an empty list.
-        pass
+        # queue to hold all the processes
+        self.process_queue = NodeQueue()
+        # also keep a list so we can print results at the end
+        self.all_processes = []
 
-    # Adds a new process to the back of the queue and saves it to our list.
-    # This is how a process "arrives" and joins the waiting line.
+    # adds a process to the queue
     def add_process(self, new_process):
-        # TODO: Enqueue new_process to the queue.
-        # Append new_process to all_processes list.
-        pass
+        self.process_queue.enqueue(new_process)
+        self.all_processes.append(new_process)
 
-    # Runs the FCFS simulation by working through each process in queue order.
-    # For each process, it calculates:
-    #   - Waiting Time:     how long the process sat idle before the CPU started it.
-    #   - Turnaround Time:  total time from arrival to completion (wait + burst).
-    # The CPU clock (current_time) keeps track of when the CPU becomes free.
+    # runs the actual FCFS simulation
     def run(self):
-        # TODO: Initialize current_time to 0.
-        # While the queue is not empty, dequeue a process.
-        # If current_time < arrival_time, set current_time to arrival_time (CPU idle time).
-        # Calculate waiting_time = current_time - arrival_time.
-        # Update current_time by adding burst_time.
-        # Calculate turnaround_time = current_time - arrival_time.
-        pass
+        current_time = 0  # keeps track of what time it is
 
-    # Calculates and returns the average waiting time across all processes.
+        while not self.process_queue.is_empty():
+            # grab the next process from the queue
+            process = self.process_queue.dequeue()
+
+            # if the cpu is idle waiting for the next process to arrive
+            if current_time < process.arrival_time:
+                current_time = process.arrival_time
+
+            # waiting time = how long it waited before cpu picked it up
+            process.waiting_time = current_time - process.arrival_time
+
+            # now run the process
+            current_time += process.burst_time
+
+            # turnaround = total time from when it arrived to when it finished
+            process.turnaround_time = current_time - process.arrival_time
+
+    # returns average waiting time
     def get_average_waiting_time(self):
-        # TODO: Sum all waiting times from all_processes.
-        # Divide by the number of processes.
-        # Return the result.
-        pass
+        total = 0
+        for p in self.all_processes:
+            total += p.waiting_time
+        return total / len(self.all_processes)
 
-    # Calculates and returns the average turnaround time across all processes.
+    # returns average turnaround time
     def get_average_turnaround_time(self):
-        # TODO: Sum all turnaround times from all_processes.
-        # Divide by the number of processes.
-        # Return the result.
-        pass
+        total = 0
+        for p in self.all_processes:
+            total += p.turnaround_time
+        return total / len(self.all_processes)
