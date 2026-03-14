@@ -1,7 +1,3 @@
-# This file defines two classes: Process and FCFSAlgorithm.
-# A Process represents a single task waiting to be run by the CPU.
-# FCFSAlgorithm runs those processes in the order they arrived (First-Come, First-Served).
-
 from node_queue import NodeQueue
 
 
@@ -19,7 +15,7 @@ class Process:
         self.turnaround_time = 0
 
     def __str__(self):
-        # just a nice way to print process info
+        # nice string for debugging
         return (f"Process {self.process_id} | "
                 f"Arrival: {self.arrival_time} | "
                 f"Burst: {self.burst_time} | "
@@ -43,35 +39,41 @@ class FCFSAlgorithm:
 
     # runs the actual FCFS simulation
     def run(self):
-        current_time = 0  # keeps track of what time it is
+        current_time = 0  # keeps track of time
 
-        while not self.process_queue.is_empty():
-            # grab the next process from the queue
-            process = self.process_queue.dequeue()
-
-            # if the cpu is idle waiting for the next process to arrive
+        # We will iterate over the queue using __iter__
+        for process in self.process_queue:
+            # if the CPU is idle waiting for the next process to arrive
             if current_time < process.arrival_time:
                 current_time = process.arrival_time
 
-            # waiting time = how long it waited before cpu picked it up
+            # waiting time = time CPU waited before picking up this process
             process.waiting_time = current_time - process.arrival_time
 
-            # now run the process
+            # run the process
             current_time += process.burst_time
 
-            # turnaround = total time from when it arrived to when it finished
+            # turnaround = total time from arrival to finish
             process.turnaround_time = current_time - process.arrival_time
+
+        # After simulation, clear the queue
+        self.process_queue.clear()
 
     # returns average waiting time
     def get_average_waiting_time(self):
-        total = 0
-        for p in self.all_processes:
-            total += p.waiting_time
-        return total / len(self.all_processes)
+        total = sum(p.waiting_time for p in self.all_processes)
+        return total / len(self.all_processes) if self.all_processes else 0
 
     # returns average turnaround time
     def get_average_turnaround_time(self):
-        total = 0
-        for p in self.all_processes:
-            total += p.turnaround_time
-        return total / len(self.all_processes)
+        total = sum(p.turnaround_time for p in self.all_processes)
+        return total / len(self.all_processes) if self.all_processes else 0
+
+    # optional: print queue without modifying it (demonstrates iteration)
+    def print_queue(self):
+        if self.process_queue.is_empty():
+            print("Queue is empty")
+        else:
+            print("Current queue:")
+            for process in self.process_queue:  # <-- uses __iter__()
+                print(f"{process.process_id} (Arrival: {process.arrival_time}, Burst: {process.burst_time})")
