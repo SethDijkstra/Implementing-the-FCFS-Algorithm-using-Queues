@@ -16,7 +16,16 @@ input("Press Enter to start the simulation...")
 print("")
 
 # Ask the user how many processes they want to simulate.
-number_of_processes = int(input("Enter the number of processes: "))
+while True:
+    try:
+        number_of_processes = int(input("Enter the number of processes: "))
+        if number_of_processes <= 0:
+            print("Number of processes must be at least 1.")
+            continue
+        break
+    except ValueError:
+        print("Please enter a valid integer.")
+        
 print("")
 
 # Create the FCFS scheduler.
